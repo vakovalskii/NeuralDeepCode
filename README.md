@@ -33,23 +33,82 @@ Tier, rate limits, daily budget and model access are enforced by the hub gateway
   <img src="docs/assets/ndcode-status.png" alt="ndcode /status output" width="640">
 </p>
 
-## Quick start
+## Install (one-liner)
 
 ```bash
-# from source (Bun >= 1.3)
-git clone https://github.com/vakovalskii/NeuralDeepCode && cd NeuralDeepCode
-bun install
-bun run dev            # launches the ndcode TUI
+curl -fsSL https://raw.githubusercontent.com/vakovalskii/NeuralDeepCode/main/install.sh | sh
+```
 
-# inside the TUI:
+Installs the prebuilt single binary to `~/.local/bin/ndcode` (no Bun/Node needed
+at runtime). Then:
+
+```bash
+ndcode                 # launch the TUI
 /login                 # browser SSO → key stored, provider configured
 /status                # tier / budget / models
 /models                # pick neuraldeep/qwen3.6-35b-a3b or gpt-oss-120b
 ```
 
+## Run from source (for development)
+
+```bash
+git clone https://github.com/vakovalskii/NeuralDeepCode && cd NeuralDeepCode
+bun install            # Bun >= 1.3.14
+bun run dev            # launches the ndcode TUI
+
+# build a standalone binary for your platform:
+bun run --cwd packages/ndcode script/build.ts --single --skip-embed-web-ui
+# → packages/ndcode/dist/ndcode-<os>-<arch>/bin/ndcode
+```
+
 Config lives in `~/.config/ndcode/` (`ndcode.json`, `neuraldeep.key`). Environment
 variables are prefixed `NDC_`; override hub endpoints with `NEURALDEEP_HUB` and
 `NEURALDEEP_API_BASE`.
+
+## Headless / non-interactive
+
+`ndcode` runs without the TUI — for scripts, CI, pipes, and editor/agent
+integrations. Authenticate once interactively (`ndcode` → `/login`); the stored
+hub credential is reused by all headless commands.
+
+**One-shot run** — send a prompt, print the result, exit:
+
+```bash
+ndcode run "explain what this repo does"
+ndcode run --model neuraldeep/qwen3.6-35b-a3b "add a healthcheck endpoint"
+
+# machine-readable stream of events (for tooling / CI):
+ndcode run --format json "list the TODOs in this codebase"
+
+# pipe a prompt in:
+echo "summarize the diff" | ndcode run
+
+# continue / resume a session:
+ndcode run --continue "now write tests for it"
+ndcode run --session <id> "..."
+```
+
+Useful `run` flags: `--model provider/model`, `--agent <name>`, `--format default|json`,
+`--file <path>` (attach files), `--continue` / `--session <id>`, `--share`,
+`--attach <url>` (drive a running server).
+
+**Headless server** — long-running HTTP API (drive it from editors, the SDK, or
+`ndcode attach`):
+
+```bash
+ndcode serve --port 4096 --hostname 127.0.0.1
+# from another shell / machine:
+ndcode attach http://127.0.0.1:4096
+ndcode run --attach http://127.0.0.1:4096 "..."   # auth: --password / NDC_SERVER_PASSWORD
+```
+
+**ACP server** — Agent Client Protocol over stdio, for IDE/editor integrations:
+
+```bash
+ndcode acp
+```
+
+All headless modes use the same `neuraldeep` provider and hub budget/limits as the TUI.
 
 ## What's different from opencode
 
