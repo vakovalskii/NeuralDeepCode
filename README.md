@@ -8,12 +8,9 @@ NeuralDeep LLM hub — RU-hosted Qwen3 / gpt-oss models on your own GPUs — and
 two native slash commands so you log in with your browser and see your tier and
 budget right inside the TUI.
 
-```
-        ▄              ▄
-█▀▀▄ █▀▀█ █▀▀▀ █▀▀█ █▀▀█ █▀▀█
-█  █ █  █ █    █  █ █  █ █▀▀▀
-▀  ▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀
-```
+<p align="center">
+  <img src="docs/assets/ndcode-help.png" alt="ndcode --help" width="720">
+</p>
 
 ## Hub integration
 
@@ -31,6 +28,10 @@ is ready with the hub's coding models:
 Tier, rate limits, daily budget and model access are enforced by the hub gateway —
 `ndcode` just consumes and displays them. See the hub contract:
 [cli-integration-guide](https://hub.neuraldeep.ru) (`docs/services/api/cli-integration-guide.md`).
+
+<p align="center">
+  <img src="docs/assets/ndcode-status.png" alt="ndcode /status output" width="640">
+</p>
 
 ## Quick start
 
@@ -57,6 +58,12 @@ variables are prefixed `NDC_`; override hub endpoints with `NEURALDEEP_HUB` and
 - Stripped of opencode's SaaS/marketing/desktop packages.
 - **Auto-update disabled** — `ndcode` is distributed via the NeuralDeep hub, never self-updates from upstream opencode.
 - No telemetry by default; nothing is sent to opencode.ai.
+
+## Contributors
+
+- **Valerii Kovalskii** ([@vakovalskii](https://github.com/vakovalskii)) — maintainer, NeuralDeep hub integration (`/login`, `/status`, `neuraldeep` provider), rebrand.
+
+Contributions welcome — open an issue or PR.
 
 ## Credits / license
 
