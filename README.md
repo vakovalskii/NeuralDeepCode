@@ -1,129 +1,67 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="NeuralDeepCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">The open source AI coding agent.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/ndcode-ai"><img alt="npm" src="https://img.shields.io/npm/v/ndcode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/ndcode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/ndcode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# NeuralDeepCode (`ndcode`)
 
-<p align="center">
-  <a href="README.md">English</a> |
-  <a href="README.zh.md">简体中文</a> |
-  <a href="README.zht.md">繁體中文</a> |
-  <a href="README.ko.md">한국어</a> |
-  <a href="README.de.md">Deutsch</a> |
-  <a href="README.es.md">Español</a> |
-  <a href="README.fr.md">Français</a> |
-  <a href="README.it.md">Italiano</a> |
-  <a href="README.da.md">Dansk</a> |
-  <a href="README.ja.md">日本語</a> |
-  <a href="README.pl.md">Polski</a> |
-  <a href="README.ru.md">Русский</a> |
-  <a href="README.bs.md">Bosanski</a> |
-  <a href="README.ar.md">العربية</a> |
-  <a href="README.no.md">Norsk</a> |
-  <a href="README.br.md">Português (Brasil)</a> |
-  <a href="README.th.md">ไทย</a> |
-  <a href="README.tr.md">Türkçe</a> |
-  <a href="README.uk.md">Українська</a> |
-  <a href="README.bn.md">বাংলা</a> |
-  <a href="README.gr.md">Ελληνικά</a> |
-  <a href="README.vi.md">Tiếng Việt</a>
-</p>
+**Terminal AI coding agent for the [NeuralDeep](https://neuraldeep.ru) hub.**
 
-[![NeuralDeepCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+`ndcode` is a terminal coding agent (a rebranded, hub-integrated fork of
+[opencode](https://github.com/sst/opencode), MIT). It talks to the self-hosted
+NeuralDeep LLM hub — RU-hosted Qwen3 / gpt-oss models on your own GPUs — and adds
+two native slash commands so you log in with your browser and see your tier and
+budget right inside the TUI.
 
----
-
-### Installation
-
-```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# Package managers
-npm i -g ndcode-ai@latest        # or bun/pnpm/yarn
-scoop install ndcode             # Windows
-choco install ndcode             # Windows
-brew install anomalyco/tap/ndcode # macOS and Linux (recommended, always up to date)
-brew install ndcode              # macOS and Linux (official brew formula, updated less)
-sudo pacman -S ndcode            # Arch Linux (Stable)
-paru -S ndcode-bin               # Arch Linux (Latest from AUR)
-mise use -g ndcode               # Any OS
-nix run nixpkgs#ndcode           # or github:anomalyco/ndcode for latest dev branch
+```
+        ▄              ▄
+█▀▀▄ █▀▀█ █▀▀▀ █▀▀█ █▀▀█ █▀▀█
+█  █ █  █ █    █  █ █  █ █▀▀▀
+▀  ▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀
 ```
 
-> [!TIP]
-> Remove versions older than 0.1.x before installing.
+## Hub integration
 
-### Desktop App (BETA)
+| command | what it does |
+|---|---|
+| **`/login`** | Browser SSO (localhost-callback, like `gh auth login`). Opens `hub.neuraldeep.ru`, mints your per-user key, stores it, and auto-configures the `neuraldeep` provider. |
+| **`/status`** | Shows your tier, daily budget (spent / limit / remaining), rate limits, and available models — straight from the hub. |
 
-NeuralDeepCode is also available as a desktop application. Download directly from the [releases page](https://github.com/anomalyco/ndcode/releases) or [opencode.ai/download](https://opencode.ai/download).
+Once logged in, the `neuraldeep` provider (pointing at `https://api.neuraldeep.ru/v1`)
+is ready with the hub's coding models:
 
-| Platform              | Download                           |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `ndcode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `ndcode-desktop-mac-x64.dmg`     |
-| Windows               | `ndcode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, or `.AppImage`     |
+- **`qwen3.6-35b-a3b`** — MoE, native tool-calling, 256k ctx
+- **`gpt-oss-120b`** — reasoning, 131k ctx
 
-```bash
-# macOS (Homebrew)
-brew install --cask ndcode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/ndcode-desktop
-```
+Tier, rate limits, daily budget and model access are enforced by the hub gateway —
+`ndcode` just consumes and displays them. See the hub contract:
+[cli-integration-guide](https://hub.neuraldeep.ru) (`docs/services/api/cli-integration-guide.md`).
 
-#### Installation Directory
-
-The install script respects the following priority order for the installation path:
-
-1. `$NDC_INSTALL_DIR` - Custom installation directory
-2. `$XDG_BIN_DIR` - XDG Base Directory Specification compliant path
-3. `$HOME/bin` - Standard user binary directory (if it exists or can be created)
-4. `$HOME/.ndcode/bin` - Default fallback
+## Quick start
 
 ```bash
-# Examples
-NDC_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+# from source (Bun >= 1.3)
+git clone https://github.com/vakovalskii/NeuralDeepCode && cd NeuralDeepCode
+bun install
+bun run dev            # launches the ndcode TUI
+
+# inside the TUI:
+/login                 # browser SSO → key stored, provider configured
+/status                # tier / budget / models
+/models                # pick neuraldeep/qwen3.6-35b-a3b or gpt-oss-120b
 ```
 
-### Agents
+Config lives in `~/.config/ndcode/` (`ndcode.json`, `neuraldeep.key`). Environment
+variables are prefixed `NDC_`; override hub endpoints with `NEURALDEEP_HUB` and
+`NEURALDEEP_API_BASE`.
 
-NeuralDeepCode includes two built-in agents you can switch between with the `Tab` key.
+## What's different from opencode
 
-- **build** - Default, full-access agent for development work
-- **plan** - Read-only agent for analysis and code exploration
-  - Denies file edits by default
-  - Asks permission before running bash commands
-  - Ideal for exploring unfamiliar codebases or planning changes
+- Rebranded to `ndcode` / **NeuralDeepCode** (command, config dir `~/.config/ndcode`, `NDC_` env, logo).
+- Native **`/login`** + **`/status`** hub commands and a default `neuraldeep` provider.
+- Stripped of opencode's SaaS/marketing/desktop packages.
+- **Auto-update disabled** — `ndcode` is distributed via the NeuralDeep hub, never self-updates from upstream opencode.
+- No telemetry by default; nothing is sent to opencode.ai.
 
-Also included is a **general** subagent for complex searches and multistep tasks.
-This is used internally and can be invoked using `@general` in messages.
+## Credits / license
 
-Learn more about [agents](https://opencode.ai/docs/agents).
+NeuralDeepCode is a fork of **[sst/opencode](https://github.com/sst/opencode)**,
+licensed under the **MIT License**. The upstream copyright notice is retained in
+[`LICENSE`](LICENSE), as the license requires. This fork is likewise MIT.
 
-### Documentation
-
-For more info on how to configure NeuralDeepCode, [**head over to our docs**](https://opencode.ai/docs).
-
-### Contributing
-
-If you're interested in contributing to NeuralDeepCode, please read our [contributing docs](./CONTRIBUTING.md) before submitting a pull request.
-
-### Building on NeuralDeepCode
-
-If you are working on a project that's related to NeuralDeepCode and is using "ndcode" as part of its name, for example "ndcode-dashboard" or "ndcode-mobile", please add a note to your README to clarify that it is not built by the NeuralDeepCode team and is not affiliated with us in any way.
-
----
-
-**Join our community** [Discord](https://discord.gg/ndcode) | [X.com](https://x.com/ndcode)
+Upstream is tracked as the `upstream` git remote for pulling future improvements.
