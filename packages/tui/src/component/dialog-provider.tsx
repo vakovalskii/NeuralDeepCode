@@ -13,6 +13,7 @@ import { DialogModel } from "./dialog-model"
 import { useToast } from "../ui/toast"
 import { isConsoleManagedProvider } from "../util/provider-origin"
 import { useConnected } from "./use-connected"
+import * as Hub from "../util/hub"
 import { useBindings } from "../keymap"
 import { useClipboard } from "../context/clipboard"
 
@@ -113,8 +114,42 @@ export function createDialogProviderOptions() {
     return promptCustomProviderID()
   }
 
+  const neuraldeepConnected = createMemo(() => sync.data.provider_next.connected.includes(Hub.PROVIDER_ID))
+
+  const neuraldeepOption = createMemo(() => ({
+    title: "NeuralDeep",
+    value: "__neuraldeep_login__",
+    description: "(Recommended) — sign in to the hub via browser",
+    category: "Popular",
+    gutter:
+      neuraldeepConnected() && onboarded() ? () => <text fg={theme.success}>✓</text> : undefined,
+    async onSelect() {
+      toast.show({ message: "Opening browser for NeuralDeep login…", variant: "info" })
+      try {
+        const { who } = await Hub.connect({
+          sdkClient: sdk.client,
+          bootstrap: () => sync.bootstrap(),
+        })
+        toast.show({
+          variant: "success",
+          message: who?.email
+            ? `Logged in to NeuralDeep as ${who.email}${who.tier ? ` (${who.tier})` : ""}`
+            : "Logged in to NeuralDeep",
+        })
+      } catch (error) {
+        toast.show({
+          variant: "error",
+          message: error instanceof Error ? error.message : "NeuralDeep login failed",
+        })
+      }
+      dialog.clear()
+    },
+  }))
+
   const options = createMemo(() => {
-    return pipe(
+    return [
+      neuraldeepOption(),
+      ...pipe(
       providerOptions(sync.data.provider_next.all),
       map((provider) => {
         if (provider.type === "custom") {
@@ -220,7 +255,8 @@ export function createDialogProviderOptions() {
           },
         }
       }),
-    )
+      ),
+    ]
   })
   return options
 }

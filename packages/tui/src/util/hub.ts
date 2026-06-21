@@ -186,6 +186,24 @@ export async function ensureProviderConfig(): Promise<boolean> {
   return true
 }
 
+// Full sign-in sequence shared by the /login command and the provider picker:
+// browser SSO → store key in the native credential store + key file → ensure the
+// `neuraldeep` config provider exists → reload the server → return who we are.
+export async function connect(opts: {
+  sdkClient: any
+  bootstrap: () => Promise<unknown>
+  onUrl?: (url: string) => void
+}): Promise<{ key: string; who?: Whoami }> {
+  const { key } = await login({ onUrl: opts.onUrl })
+  await opts.sdkClient.auth.set({ providerID: PROVIDER_ID, auth: { type: "api", key } })
+  await saveKeyFile(key)
+  await ensureProviderConfig()
+  await opts.sdkClient.instance.dispose().catch(() => {})
+  await opts.bootstrap().catch(() => {})
+  const who = await whoami(key).catch(() => undefined)
+  return { key, who }
+}
+
 export function status(key: string): Promise<HubStatus> {
   return getJson<HubStatus>("/api/cli/status", key)
 }

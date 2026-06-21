@@ -46,7 +46,6 @@ import { useEditorContext } from "../../context/editor"
 import { openEditor } from "../../editor"
 import { useDialog } from "../../ui/dialog"
 import { DialogAlert } from "../../ui/dialog-alert"
-import * as Hub from "../../util/hub"
 import { TodoItem } from "../../component/todo-item"
 import { DialogMessage } from "./dialog-message"
 import type { PromptInfo } from "../../component/prompt/history"
@@ -459,65 +458,6 @@ export function Session() {
   }
 
   const sessionCommandList = createMemo(() => [
-    {
-      title: "Log in to NeuralDeep",
-      value: "neuraldeep.login",
-      category: "NeuralDeep",
-      slash: {
-        name: "login",
-      },
-      run: async () => {
-        toast.show({ message: "Opening browser for NeuralDeep login…", variant: "info" })
-        try {
-          const { key } = await Hub.login({})
-          await sdk.client.auth.set({
-            providerID: Hub.PROVIDER_ID,
-            auth: { type: "api", key },
-          })
-          await Hub.saveKeyFile(key)
-          await Hub.ensureProviderConfig()
-          await sdk.client.instance.dispose().catch(() => {})
-          await sync.bootstrap().catch(() => {})
-          const who = await Hub.whoami(key).catch(() => undefined)
-          toast.show({
-            message: who?.email
-              ? `Logged in to NeuralDeep as ${who.email}${who.tier ? ` (${who.tier})` : ""}`
-              : "Logged in to NeuralDeep",
-            variant: "success",
-          })
-        } catch (error) {
-          toast.show({
-            message: error instanceof Error ? error.message : "NeuralDeep login failed",
-            variant: "error",
-          })
-        }
-        dialog.clear()
-      },
-    },
-    {
-      title: "NeuralDeep status",
-      value: "neuraldeep.status",
-      category: "NeuralDeep",
-      slash: {
-        name: "status",
-      },
-      run: async () => {
-        const key = await Hub.readKeyFile()
-        if (!key) {
-          toast.show({ message: "Not logged in — run /login first", variant: "warning" })
-          return
-        }
-        try {
-          const info = await Hub.status(key)
-          await DialogAlert.show(dialog, "NeuralDeep status", Hub.formatStatus(info))
-        } catch (error) {
-          toast.show({
-            message: error instanceof Error ? error.message : "Failed to fetch NeuralDeep status",
-            variant: "error",
-          })
-        }
-      },
-    },
     {
       title: session()?.share?.url ? "Copy share link" : "Share session",
       value: "session.share",

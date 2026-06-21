@@ -53,6 +53,7 @@ import { PromptHistoryProvider } from "./component/prompt/history"
 import { FrecencyProvider } from "./component/prompt/frecency"
 import { PromptStashProvider } from "./component/prompt/stash"
 import { DialogAlert } from "./ui/dialog-alert"
+import * as Hub from "./util/hub"
 import { DialogConfirm } from "./ui/dialog-confirm"
 import { ToastProvider, useToast } from "./ui/toast"
 import { isDefaultTitle } from "./util/session"
@@ -722,6 +723,35 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
         },
       },
       {
+        name: "neuraldeep.login",
+        title: "Log in to NeuralDeep",
+        suggested: !connected(),
+        slashName: "login",
+        slashAliases: ["signin"],
+        run: async () => {
+          toast.show({ message: "Opening browser for NeuralDeep login…", variant: "info" })
+          try {
+            const { who } = await Hub.connect({
+              sdkClient: sdk.client,
+              bootstrap: () => sync.bootstrap(),
+            })
+            toast.show({
+              variant: "success",
+              message: who?.email
+                ? `Logged in to NeuralDeep as ${who.email}${who.tier ? ` (${who.tier})` : ""}`
+                : "Logged in to NeuralDeep",
+            })
+          } catch (error) {
+            toast.show({
+              variant: "error",
+              message: error instanceof Error ? error.message : "NeuralDeep login failed",
+            })
+          }
+          dialog.clear()
+        },
+        category: "Provider",
+      },
+      {
         name: "provider.connect",
         title: "Connect provider",
         suggested: !connected(),
@@ -750,8 +780,23 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
         name: "ndcode.status",
         title: "View status",
         slashName: "status",
-        run: () => {
-          dialog.replace(() => <DialogStatus />)
+        slashAliases: ["budget", "hub"],
+        run: async () => {
+          const key = await Hub.readKeyFile().catch(() => undefined)
+          if (!key) {
+            dialog.replace(() => <DialogStatus />)
+            return
+          }
+          try {
+            const info = await Hub.status(key)
+            await DialogAlert.show(dialog, "NeuralDeep status", Hub.formatStatus(info))
+          } catch (error) {
+            toast.show({
+              variant: "error",
+              message: error instanceof Error ? error.message : "Failed to fetch NeuralDeep status",
+            })
+            dialog.replace(() => <DialogStatus />)
+          }
         },
         category: "System",
       },
