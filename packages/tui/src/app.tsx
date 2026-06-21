@@ -735,6 +735,7 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
               sdkClient: sdk.client,
               bootstrap: () => sync.bootstrap(),
             })
+            local.model.set({ providerID: Hub.PROVIDER_ID, modelID: Hub.DEFAULT_MODEL }, { recent: true })
             toast.show({
               variant: "success",
               message: who?.email

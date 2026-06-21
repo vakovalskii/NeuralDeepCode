@@ -19,18 +19,14 @@ export const HUB = process.env.NEURALDEEP_HUB ?? "https://hub.neuraldeep.ru"
 export const API_BASE = process.env.NEURALDEEP_API_BASE ?? "https://api.neuraldeep.ru/v1"
 export const PROVIDER_ID = "neuraldeep"
 export const CLIENT_ID = "ndcode"
+// Default model selected right after login so the user isn't left on
+// "No provider selected" (which otherwise sends them back into /connect).
+export const DEFAULT_MODEL = "qwen3.6-35b-a3b"
 
 export type HubStatus = {
   user?: { email?: string; name?: string }
   key?: { name?: string; masked?: string }
   tier?: string
-  budget?: {
-    currency?: string
-    limit_day?: number
-    spent_day?: number | null
-    remaining_day?: number | null
-    resets_at?: string
-  }
   limits?: { rpm?: number; parallel?: number }
   models?: { id: string; mode?: string; ctx?: number }[]
 }
@@ -218,13 +214,8 @@ export function formatStatus(s: HubStatus): string {
   const who = [s.user?.name, s.user?.email].filter(Boolean).join(" · ")
   if (who) lines.push(who)
   if (s.tier) lines.push(`Tier: ${s.tier}`)
-  const b = s.budget
-  if (b) {
-    const cur = b.currency ?? "USD"
-    const spent = b.spent_day == null ? "n/a" : `${b.spent_day}`
-    const rem = b.remaining_day == null ? "n/a" : `${b.remaining_day}`
-    lines.push(`Budget/day: ${spent} / ${b.limit_day ?? "?"} ${cur} spent (${rem} left)`)
-  }
+  // Дневной $-бюджет НЕ показываем: это внутренний потолок себестоимости, а не
+  // подписочная квота (сервер /api/cli/status его больше не отдаёт).
   if (s.limits) lines.push(`Limits: ${s.limits.rpm ?? "?"} rpm · ${s.limits.parallel ?? "?"} parallel`)
   if (s.models?.length) {
     lines.push("")

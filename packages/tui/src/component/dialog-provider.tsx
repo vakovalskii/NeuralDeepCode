@@ -13,6 +13,7 @@ import { DialogModel } from "./dialog-model"
 import { useToast } from "../ui/toast"
 import { isConsoleManagedProvider } from "../util/provider-origin"
 import { useConnected } from "./use-connected"
+import { useLocal } from "../context/local"
 import * as Hub from "../util/hub"
 import { useBindings } from "../keymap"
 import { useClipboard } from "../context/clipboard"
@@ -91,6 +92,7 @@ export function createDialogProviderOptions() {
   const toast = useToast()
   const { theme } = useTheme()
   const onboarded = useConnected()
+  const local = useLocal()
 
   async function promptCustomProviderID(): Promise<string | undefined> {
     const value = await DialogPrompt.show(dialog, "Other", {
@@ -124,12 +126,20 @@ export function createDialogProviderOptions() {
     gutter:
       neuraldeepConnected() && onboarded() ? () => <text fg={theme.success}>✓</text> : undefined,
     async onSelect() {
+      // Already signed in → just (re)select the model, don't reopen the browser.
+      if (neuraldeepConnected()) {
+        local.model.set({ providerID: Hub.PROVIDER_ID, modelID: Hub.DEFAULT_MODEL }, { recent: true })
+        toast.show({ variant: "success", message: "NeuralDeep ready" })
+        dialog.clear()
+        return
+      }
       toast.show({ message: "Opening browser for NeuralDeep login…", variant: "info" })
       try {
         const { who } = await Hub.connect({
           sdkClient: sdk.client,
           bootstrap: () => sync.bootstrap(),
         })
+        local.model.set({ providerID: Hub.PROVIDER_ID, modelID: Hub.DEFAULT_MODEL }, { recent: true })
         toast.show({
           variant: "success",
           message: who?.email
