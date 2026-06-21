@@ -3,10 +3,10 @@ import { Schema } from "effect"
 import { logo as glyphs } from "./logo"
 
 const wordmark = [
-  `        ▄              ▄     `,
-  `█▀▀▄ █▀▀█ █▀▀▀ █▀▀█ █▀▀█ █▀▀█`,
-  `█  █ █  █ █    █  █ █  █ █▀▀▀`,
-  `▀  ▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀`,
+  "         _            _     ",
+  " _ _  __| |__ ___  __| |___ ",
+  "| ' \\/ _` / _/ _ \\/ _` / -_)",
+  "|_||_\\__,_\\__\\___/\\__,_\\___|",
 ]
 
 export class CancelledError extends Schema.TaggedErrorClass<CancelledError>()("UICancelledError", {}) {}
