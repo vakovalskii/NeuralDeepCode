@@ -1,0 +1,21 @@
+{
+  "$schema": "https://v2-8-13.turborepo.dev/schema.json",
+  "globalEnv": ["CI", "NDC_DISABLE_SHARE"],
+  "globalPassThroughEnv": ["CI", "NDC_DISABLE_SHARE"],
+  "tasks": {
+    "typecheck": {},
+    "build": {
+      "dependsOn": [],
+      "outputs": ["dist/**"]
+    },
+    "ndcode#test": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "passThroughEnv": ["*"]
+    },
+    "@neuraldeepcode/ui#test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    }
+  }
+}
