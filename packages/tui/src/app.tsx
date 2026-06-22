@@ -53,6 +53,7 @@ import { PromptHistoryProvider } from "./component/prompt/history"
 import { FrecencyProvider } from "./component/prompt/frecency"
 import { PromptStashProvider } from "./component/prompt/stash"
 import { DialogAlert } from "./ui/dialog-alert"
+import { DialogWelcome } from "./component/dialog-welcome"
 import * as Hub from "./util/hub"
 import { DialogConfirm } from "./ui/dialog-confirm"
 import { ToastProvider, useToast } from "./ui/toast"
@@ -736,19 +737,14 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
               bootstrap: () => sync.bootstrap(),
             })
             local.model.set({ providerID: Hub.PROVIDER_ID, modelID: Hub.DEFAULT_MODEL }, { recent: true })
-            toast.show({
-              variant: "success",
-              message: who?.email
-                ? `Logged in to NeuralDeep as ${who.email}${who.tier ? ` (${who.tier})` : ""}`
-                : "Logged in to NeuralDeep",
-            })
+            dialog.replace(() => <DialogWelcome email={who?.email} tier={who?.tier} />)
           } catch (error) {
             toast.show({
               variant: "error",
               message: error instanceof Error ? error.message : "NeuralDeep login failed",
             })
+            dialog.clear()
           }
-          dialog.clear()
         },
         category: "Provider",
       },

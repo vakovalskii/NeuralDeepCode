@@ -14,6 +14,7 @@ import { useToast } from "../ui/toast"
 import { isConsoleManagedProvider } from "../util/provider-origin"
 import { useConnected } from "./use-connected"
 import { useLocal } from "../context/local"
+import { DialogWelcome } from "./dialog-welcome"
 import * as Hub from "../util/hub"
 import { useBindings } from "../keymap"
 import { useClipboard } from "../context/clipboard"
@@ -140,19 +141,14 @@ export function createDialogProviderOptions() {
           bootstrap: () => sync.bootstrap(),
         })
         local.model.set({ providerID: Hub.PROVIDER_ID, modelID: Hub.DEFAULT_MODEL }, { recent: true })
-        toast.show({
-          variant: "success",
-          message: who?.email
-            ? `Logged in to NeuralDeep as ${who.email}${who.tier ? ` (${who.tier})` : ""}`
-            : "Logged in to NeuralDeep",
-        })
+        dialog.replace(() => <DialogWelcome email={who?.email} tier={who?.tier} />)
       } catch (error) {
         toast.show({
           variant: "error",
           message: error instanceof Error ? error.message : "NeuralDeep login failed",
         })
+        dialog.clear()
       }
-      dialog.clear()
     },
   }))
 

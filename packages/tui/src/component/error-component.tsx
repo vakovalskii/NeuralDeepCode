@@ -26,7 +26,7 @@ export function ErrorComponent(props: { error: Error; reset: () => void; mode?: 
     bg: isLight ? "#ffffff" : "#0a0a0a",
     text: isLight ? "#1a1a1a" : "#eeeeee",
     muted: isLight ? "#8a8a8a" : "#808080",
-    primary: isLight ? "#3b7dd8" : "#fab283",
+    primary: isLight ? "#00a85c" : "#00ff88",
   }
 
   if (props.error.message) {
