@@ -59,7 +59,7 @@ function model(input: {
     providerID: "ndcode",
     api: {
       id: "ndcode",
-      url: "https://opencode.ai",
+      url: "https://neuraldeep.ru",
       npm: "@ai-sdk/openai-compatible",
     },
     name: input.name,

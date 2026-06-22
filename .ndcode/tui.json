@@ -1,5 +1,5 @@
 {
-  "$schema": "https://opencode.ai/tui.json",
+  "$schema": "https://neuraldeep.ru/tui.json",
   "plugin": [
     [
       "./plugins/tui-smoke.tsx",

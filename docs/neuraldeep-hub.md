@@ -24,7 +24,7 @@ Both are overridable via env vars of the same name (see `packages/tui/src/util/h
 3. Hub does Yandex SSO (if needed), mints/reuses a per-user key named `ndcode`,
    and redirects to `http://127.0.0.1:<port>/cb?state=<state>&key=<sk-…>`.
 4. Client validates `state`, then:
-   - stores the key in opencode's native credential store via
+   - stores the key in ndcode's native credential store via
      `sdk.client.auth.set({ providerID: "neuraldeep", auth: { type: "api", key } })`;
    - also writes it to `~/.config/ndcode/neuraldeep.key` (0600) for `/status`;
    - ensures `~/.config/ndcode/ndcode.json` declares the `neuraldeep` provider

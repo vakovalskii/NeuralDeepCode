@@ -2324,7 +2324,7 @@ describe("ProviderTransform.message - strip openai metadata when store=false", (
       providerID: "ndcode",
       api: {
         id: "ndcode-test",
-        url: "https://api.opencode.ai",
+        url: "https://api.neuraldeep.ru",
         npm: "@ai-sdk/openai-compatible",
       },
     }
@@ -2358,7 +2358,7 @@ describe("ProviderTransform.message - strip openai metadata when store=false", (
       providerID: "ndcode",
       api: {
         id: "ndcode-test",
-        url: "https://api.opencode.ai",
+        url: "https://api.neuraldeep.ru",
         npm: "@ai-sdk/openai-compatible",
       },
     }

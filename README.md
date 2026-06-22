@@ -2,14 +2,13 @@
 
 **Terminal AI coding agent for the [NeuralDeep](https://neuraldeep.ru) hub.**
 
-`ndcode` is a terminal coding agent (a rebranded, hub-integrated fork of
-[opencode](https://github.com/sst/opencode), MIT). It talks to the self-hosted
-NeuralDeep LLM hub — RU-hosted Qwen3 / gpt-oss models on your own GPUs — and adds
-two native slash commands so you log in with your browser and see your tier and
-budget right inside the TUI.
+`ndcode` is a terminal coding agent that talks to the self-hosted NeuralDeep LLM
+hub — RU-hosted Qwen3 / gpt-oss models on your own GPUs. Log in with your browser,
+see your tier and budget right inside the TUI, and start coding — no other
+accounts, no provider juggling.
 
 <p align="center">
-  <img src="docs/assets/ndcode-help.png" alt="ndcode --help" width="720">
+  <img src="docs/assets/ndcode-home.png" alt="ndcode" width="860">
 </p>
 
 ## Hub integration
@@ -110,24 +109,24 @@ ndcode acp
 
 All headless modes use the same `neuraldeep` provider and hub budget/limits as the TUI.
 
-## What's different from opencode
+## What's inside
 
-- Rebranded to `ndcode` / **NeuralDeepCode** (command, config dir `~/.config/ndcode`, `NDC_` env, logo).
-- Native **`/login`** + **`/status`** hub commands and a default `neuraldeep` provider.
-- Stripped of opencode's SaaS/marketing/desktop packages.
-- **Auto-update disabled** — `ndcode` is distributed via the NeuralDeep hub, never self-updates from upstream opencode.
-- No telemetry by default; nothing is sent to opencode.ai.
+- `ndcode` / **NeuralDeepCode** — command, config dir `~/.config/ndcode`, `NDC_` env, green neon theme.
+- Native **`/login`** + **`/status`** hub commands; **NeuralDeep is the default provider** and the first thing you connect.
+- Focused on the hub — no SaaS upsells, no provider juggling, no desktop/marketing baggage.
+- **Auto-update disabled** — `ndcode` is distributed via the NeuralDeep hub.
+- No telemetry by default.
 
 ## Contributors
 
-- **Valerii Kovalskii** ([@vakovalskii](https://github.com/vakovalskii)) — maintainer, NeuralDeep hub integration (`/login`, `/status`, `neuraldeep` provider), rebrand.
+- **Valerii Kovalskii** ([@vakovalskii](https://github.com/vakovalskii)) — maintainer, NeuralDeep hub integration (`/login`, `/status`, `neuraldeep` provider).
 
 Contributions welcome — open an issue or PR.
 
-## Credits / license
+## License
 
-NeuralDeepCode is a fork of **[sst/opencode](https://github.com/sst/opencode)**,
-licensed under the **MIT License**. The upstream copyright notice is retained in
-[`LICENSE`](LICENSE), as the license requires. This fork is likewise MIT.
+NeuralDeepCode is licensed under the **MIT License** (see [`LICENSE`](LICENSE)). It
+builds on prior MIT-licensed work whose copyright notice is retained in
+[`LICENSE`](LICENSE), as that license requires.
 
 Upstream is tracked as the `upstream` git remote for pulling future improvements.

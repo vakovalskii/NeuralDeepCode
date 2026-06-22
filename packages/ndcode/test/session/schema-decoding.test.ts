@@ -240,7 +240,7 @@ describe("SessionStatus.Info", () => {
         title: "Free limit reached",
         message: "Subscribe to NeuralDeepCode Go.",
         label: "subscribe",
-        link: "https://opencode.ai/go",
+        link: "https://neuraldeep.ru/go",
       },
       next: 500,
     }

@@ -36,7 +36,7 @@ describe("NvidiaPlugin", () => {
       })
       expect((yield* catalog.provider.get(ProviderV2.ID.make("nvidia"))).request.headers).toEqual({
         Existing: "value",
-        "HTTP-Referer": "https://opencode.ai/",
+        "HTTP-Referer": "https://neuraldeep.ru/",
         "X-Title": "ndcode",
         "X-BILLING-INVOKE-ORIGIN": "NeuralDeepCode",
       })
@@ -62,7 +62,7 @@ describe("NvidiaPlugin", () => {
       })
 
       expect((yield* catalog.provider.get(ProviderV2.ID.make("nvidia"))).request.headers).toEqual({
-        "HTTP-Referer": "https://opencode.ai/",
+        "HTTP-Referer": "https://neuraldeep.ru/",
         "X-Title": "ndcode",
         "X-BILLING-INVOKE-ORIGIN": "NeuralDeepCode",
       })
@@ -90,7 +90,7 @@ describe("NvidiaPlugin", () => {
       })
 
       expect((yield* catalog.provider.get(ProviderV2.ID.make("nvidia"))).request.headers).toEqual({
-        "HTTP-Referer": "https://opencode.ai/",
+        "HTTP-Referer": "https://neuraldeep.ru/",
         "X-Title": "ndcode",
         "X-BILLING-INVOKE-ORIGIN": "CustomOrigin",
       })
