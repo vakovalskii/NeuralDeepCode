@@ -28,8 +28,24 @@ export const RETRY_BACKOFF_FACTOR = 2
 export const RETRY_MAX_DELAY_NO_HEADERS = 30_000 // 30 seconds
 export const RETRY_MAX_DELAY = 2_147_483_647 // max 32-bit signed integer for setTimeout
 
+// Cap the number of retries for a single model call. The hub uses 429s to manage
+// access; retrying forever just feeds its abuse cooldown (consecutive-429 counter),
+// which then never clears because our own retries keep tripping it. After this many
+// attempts we give up and surface the error so the user can back off / check /status.
+export const RETRY_MAX_ATTEMPTS = 6
+// Never block the agent longer than this on a single wait. If the server asks us to
+// wait longer than this (e.g. a multi-minute cooldown via Retry-After), we stop
+// retrying and surface the error instead of hanging the session for minutes.
+export const RETRY_MAX_WAIT_MS = 60_000
+
 function cap(ms: number) {
   return Math.min(ms, RETRY_MAX_DELAY)
+}
+
+// ±20% jitter so repeated clients (and our own repeated attempts) don't retry in
+// lockstep and synchronise into bursts against the hub.
+function jitter(ms: number) {
+  return Math.round(ms * (0.8 + Math.random() * 0.4))
 }
 
 export function delay(attempt: number, error?: SessionV1.APIError) {
@@ -58,11 +74,13 @@ export function delay(attempt: number, error?: SessionV1.APIError) {
         }
       }
 
-      return cap(RETRY_INITIAL_DELAY * Math.pow(RETRY_BACKOFF_FACTOR, attempt - 1))
+      return cap(jitter(RETRY_INITIAL_DELAY * Math.pow(RETRY_BACKOFF_FACTOR, attempt - 1)))
     }
   }
 
-  return cap(Math.min(RETRY_INITIAL_DELAY * Math.pow(RETRY_BACKOFF_FACTOR, attempt - 1), RETRY_MAX_DELAY_NO_HEADERS))
+  return cap(
+    jitter(Math.min(RETRY_INITIAL_DELAY * Math.pow(RETRY_BACKOFF_FACTOR, attempt - 1), RETRY_MAX_DELAY_NO_HEADERS)),
+  )
 }
 
 export function retryable(error: Err, provider: string) {
@@ -183,8 +201,15 @@ export function policy(opts: {
       const error = opts.parse(meta.input)
       const retry = retryable(error, opts.provider)
       if (!retry) return Cause.done(meta.attempt)
+      // Stop after a bounded number of attempts so a persistent 429 doesn't turn
+      // into an unbounded retry storm against the hub.
+      if (meta.attempt >= RETRY_MAX_ATTEMPTS) return Cause.done(meta.attempt)
+      const wait = delay(meta.attempt, SessionV1.APIError.isInstance(error) ? error : undefined)
+      // If the server wants us to wait longer than we're willing to block the
+      // session (e.g. a multi-minute cooldown), give up and surface the error
+      // instead of hanging — and stop feeding the cooldown with more requests.
+      if (wait > RETRY_MAX_WAIT_MS) return Cause.done(meta.attempt)
       return Effect.gen(function* () {
-        const wait = delay(meta.attempt, SessionV1.APIError.isInstance(error) ? error : undefined)
         const now = yield* Clock.currentTimeMillis
         yield* opts.set({
           attempt: meta.attempt,
