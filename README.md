@@ -11,6 +11,17 @@ accounts, no provider juggling.
   <img src="docs/assets/ndcode-home.png" alt="ndcode" width="860">
 </p>
 
+## The idea
+
+Most terminal coding agents are tuned for Claude / GPT. `ndcode` takes a mature
+open-source agent loop ([opencode](https://github.com/sst/opencode), MIT) and
+**adapts it for working with Qwen models** served by the NeuralDeep hub —
+Qwen3-Coder / Qwen3 (`qwen3.6-35b-a3b`) and `gpt-oss-120b`. The goal is a coding
+agent that feels native to *these* models: model-specific system prompts and
+tool-calling tuned for Qwen, the hub as the default (and only) provider, browser
+SSO login, and budget/limits visible in the TUI — instead of a generic client
+pointed at someone else's cloud.
+
 ## Hub integration
 
 | command | what it does |
