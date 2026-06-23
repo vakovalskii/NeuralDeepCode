@@ -1037,10 +1037,7 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
     })
   })
 
-  event.on("installation.update-available", async (evt) => {
-    console.log("installation.update-available", evt)
-    const version = evt.properties.version
-
+  async function promptUpdate(version: string) {
     const skipped = kv.get("skipped_version")
     if (skipped && !isVersionGreater(version, skipped)) return
 
@@ -1083,7 +1080,28 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
     )
 
     void exit()
+  }
+
+  event.on("installation.update-available", (evt) => {
+    void promptUpdate(evt.properties.version)
   })
+
+  // Roll updates from this repo's GitHub releases: on launch, check the latest
+  // release and offer to update if it's newer than the running build.
+  void (async () => {
+    try {
+      const res = await fetch("https://api.github.com/repos/vakovalskii/NeuralDeepCode/releases/latest", {
+        headers: { accept: "application/vnd.github+json" },
+      })
+      if (!res.ok) return
+      const data = (await res.json()) as { tag_name?: string }
+      const latest = (data.tag_name ?? "").replace(/^v/, "").trim()
+      if (!latest || !isVersionGreater(latest, InstallationVersion)) return
+      await promptUpdate(latest)
+    } catch {
+      // offline / rate-limited — skip the update check silently
+    }
+  })()
 
   const plugin = createMemo(() => {
     if (!ready()) return

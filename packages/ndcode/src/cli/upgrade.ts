@@ -1,7 +1,5 @@
-// NeuralDeepCode: auto-update is intentionally disabled.
-//
-// This is a fork of opencode distributed via the NeuralDeep hub, not upstream
-// opencode npm/GitHub releases. Running the upstream self-updater here would
-// replace the `ndcode` binary with stock opencode. Installs/updates are managed
-// by the hub installer instead. The `ndcode upgrade` command is likewise a no-op.
+// The startup update check lives in the TUI (packages/tui/src/app.tsx): it queries
+// this repo's latest GitHub release and offers to update. This worker-side hook is
+// kept as a no-op so there is a single update prompt. Manual upgrades go through the
+// `ndcode upgrade` command and the /global/upgrade route (Installation.upgrade).
 export async function upgrade() {}

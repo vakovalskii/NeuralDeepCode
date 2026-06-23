@@ -30,10 +30,15 @@ esac
 command -v curl >/dev/null 2>&1 || die "curl is required"
 asset="ndcode-${os}-${arch}"
 
-# --- resolve latest release tag ---
-grn "→ resolving latest ndcode release…"
-tag=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
-  | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)
+# --- resolve release tag (VERSION env pins a specific build; default: latest) ---
+if [ -n "${VERSION:-}" ]; then
+  case "$VERSION" in v*) tag="$VERSION" ;; *) tag="v$VERSION" ;; esac
+  grn "→ installing pinned ndcode ${tag}…"
+else
+  grn "→ resolving latest ndcode release…"
+  tag=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
+    | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)
+fi
 [ -n "${tag:-}" ] || die "could not find a release. Build from source: bun run --cwd packages/ndcode build --single --skip-embed-web-ui"
 
 url="https://github.com/${REPO}/releases/download/${tag}/${asset}"

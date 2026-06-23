@@ -156,7 +156,9 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProce
 
     const upgradeCurl = Effect.fnUntraced(
       function* (target: string) {
-        const response = yield* httpOk.execute(HttpClientRequest.get("https://neuraldeep.ru/install"))
+        const response = yield* httpOk.execute(
+          HttpClientRequest.get("https://raw.githubusercontent.com/vakovalskii/NeuralDeepCode/main/install.sh"),
+        )
         const body = yield* response.text
         const bodyBytes = new TextEncoder().encode(body)
         const shell = yield* upgradeScriptShell()
@@ -267,7 +269,7 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProce
         }
 
         const response = yield* httpOk.execute(
-          HttpClientRequest.get("https://api.github.com/repos/vakovalskii/ndcode/releases/latest").pipe(
+          HttpClientRequest.get("https://api.github.com/repos/vakovalskii/NeuralDeepCode/releases/latest").pipe(
             HttpClientRequest.acceptJson,
           ),
         )
