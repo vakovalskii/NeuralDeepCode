@@ -8,7 +8,7 @@ see your tier and budget right inside the TUI, and start coding — no other
 accounts, no provider juggling.
 
 <p align="center">
-  <img src="docs/assets/ndcode-home.png" alt="ndcode" width="860">
+  <img src="https://raw.githubusercontent.com/vakovalskii/NeuralDeepCode/main/docs/assets/ndcode-home.png" alt="ndcode" width="860">
 </p>
 
 ## The idea
@@ -21,6 +21,27 @@ agent that feels native to *these* models: model-specific system prompts and
 tool-calling tuned for Qwen, the hub as the default (and only) provider, browser
 SSO login, and budget/limits visible in the TUI — instead of a generic client
 pointed at someone else's cloud.
+
+## Benchmark
+
+A small agentic coding suite ([`bench/`](bench)) — each task runs the agent
+headless in a clean repo and is scored by its own tests passing. On the hub's
+default model:
+
+| model | suite | pass-rate |
+|---|---|---|
+| `qwen3.6-35b-a3b` | bench/ (6 tasks: implement + bug-fix, Python/JS) | **6 / 6** |
+
+Run it yourself (needs a working `ndcode` + `/login`, plus `python3` and `node`):
+
+```bash
+bench/run.sh                                 # default qwen3.6-35b-a3b
+MODEL=neuraldeep/gpt-oss-120b bench/run.sh   # compare another hub model
+```
+
+> Note the hub's `max_parallel_requests` limit (tier-dependent) — the runner clears
+> stray runs and spaces tasks so a correct rate-limit back-off isn't counted as a
+> failure.
 
 ## Hub integration
 
@@ -40,7 +61,7 @@ Tier, rate limits, daily budget and model access are enforced by the hub gateway
 [cli-integration-guide](https://hub.neuraldeep.ru) (`docs/services/api/cli-integration-guide.md`).
 
 <p align="center">
-  <img src="docs/assets/ndcode-status.png" alt="ndcode /status output" width="640">
+  <img src="https://raw.githubusercontent.com/vakovalskii/NeuralDeepCode/main/docs/assets/ndcode-status.png" alt="ndcode /status output" width="640">
 </p>
 
 ## Install
