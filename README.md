@@ -94,8 +94,15 @@ ndcode                                         # opens the TUI
 After `/login` the model is selected automatically (`qwen3.6-35b-a3b`) — type your
 first task and go.
 
-**Update** — there is no auto-update (by design). To get the latest build, just run
-the install command again; it always fetches the newest release:
+**Updates roll automatically from this repo's releases.** On launch `ndcode` checks
+the latest release and, if there's a newer build, offers to update in place — just
+confirm. You can also update any time from the terminal:
+
+```bash
+ndcode upgrade            # pull the latest release and reinstall in place
+```
+
+Or re-run the installer (always fetches the newest release):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vakovalskii/NeuralDeepCode/main/install.sh | sh
@@ -179,7 +186,7 @@ All headless modes use the same `neuraldeep` provider and hub budget/limits as t
 - `ndcode` / **NeuralDeepCode** — command, config dir `~/.config/ndcode`, `NDC_` env, green neon theme.
 - Native **`/login`** + **`/status`** hub commands; **NeuralDeep is the default provider** and the first thing you connect.
 - Focused on the hub — no SaaS upsells, no provider juggling, no desktop/marketing baggage.
-- **Auto-update disabled** — `ndcode` is distributed via the NeuralDeep hub.
+- **Self-updating** — checks this repo's releases on launch and updates in place (`ndcode upgrade`).
 - No telemetry by default.
 
 ## Contributors
