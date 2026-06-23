@@ -44,6 +44,13 @@ curl -fsSL "$url" -o "$tmp" || die "download failed: $url"
 chmod +x "$tmp"
 mv "$tmp" "$BIN_DIR/ndcode"
 
+# macOS (arm64): a moved/copied single binary can lose its code signature and get
+# "killed: 9" by the kernel. Re-sign ad-hoc and strip quarantine so it just runs.
+if [ "$os" = "darwin" ]; then
+  codesign --force --sign - "$BIN_DIR/ndcode" >/dev/null 2>&1 || true
+  xattr -c "$BIN_DIR/ndcode" >/dev/null 2>&1 || true
+fi
+
 grn ""
 grn "✓ installed: $BIN_DIR/ndcode"
 case ":$PATH:" in

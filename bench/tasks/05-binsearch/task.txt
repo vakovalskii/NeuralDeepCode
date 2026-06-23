@@ -1,0 +1,1 @@
+bsearch in solution.py hangs or returns wrong results (an off-by-one / infinite-loop bug in the lo/hi update). Fix it so `python3 test.py` prints ALL PASS.

@@ -43,21 +43,54 @@ Tier, rate limits, daily budget and model access are enforced by the hub gateway
   <img src="docs/assets/ndcode-status.png" alt="ndcode /status output" width="640">
 </p>
 
-## Install (one-liner)
+## Install
+
+**One command (macOS / Linux):**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vakovalskii/NeuralDeepCode/main/install.sh | sh
 ```
 
-Installs the prebuilt single binary to `~/.local/bin/ndcode` (no Bun/Node needed
-at runtime). Then:
+That's it — it downloads a single prebuilt binary to `~/.local/bin/ndcode`. No Bun,
+no Node, no build step needed to run it. On macOS it auto-signs the binary so it
+just runs.
+
+**Then, three steps:**
 
 ```bash
-ndcode                 # launch the TUI
-/login                 # browser SSO → key stored, provider configured
-/status                # tier / budget / models
-/models                # pick neuraldeep/qwen3.6-35b-a3b or gpt-oss-120b
+# 1. make sure ~/.local/bin is on your PATH (the installer prints this if not):
+export PATH="$HOME/.local/bin:$PATH"          # add to ~/.zshrc or ~/.bashrc
+
+# 2. launch and log in:
+ndcode                                         # opens the TUI
+#   → on the home screen pick "NeuralDeep" (it's first), or just type /login
+#   → a browser opens, you sign in, the key + provider are configured for you
+
+# 3. check you're good and start coding:
+/status                                        # tier / daily budget / models
 ```
+
+After `/login` the model is selected automatically (`qwen3.6-35b-a3b`) — type your
+first task and go.
+
+**Update** — there is no auto-update (by design). To get the latest build, just run
+the install command again; it always fetches the newest release:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vakovalskii/NeuralDeepCode/main/install.sh | sh
+```
+
+<details>
+<summary>Troubleshooting</summary>
+
+- **`zsh: command not found: ndcode`** — `~/.local/bin` isn't on your PATH. Run the
+  `export PATH=…` line above and reopen the terminal.
+- **macOS `killed: 9`** — a hand-copied binary lost its signature. Re-sign it:
+  `codesign --force --sign - ~/.local/bin/ndcode && xattr -c ~/.local/bin/ndcode`
+  (the installer does this automatically).
+- **Windows** — download the binary from
+  [Releases](https://github.com/vakovalskii/NeuralDeepCode/releases) manually.
+</details>
 
 ## Run from source (for development)
 

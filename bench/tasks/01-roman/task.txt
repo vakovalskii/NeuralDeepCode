@@ -1,0 +1,1 @@
+Implement roman_to_int(s) in solution.py to convert a Roman numeral string to an integer. Then run `python3 test.py` and make sure it prints ALL PASS.

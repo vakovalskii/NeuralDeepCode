@@ -1,0 +1,1 @@
+Implement parse_ini(text) in solution.py: parse a simple INI string into a dict of sections to key/value dicts. Values are strings, whitespace around '=' trimmed. Run `python3 test.py` and confirm ALL PASS.
