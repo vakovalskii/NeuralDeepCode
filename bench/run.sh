@@ -9,12 +9,18 @@
 set -u
 
 MODEL="${MODEL:-neuraldeep/qwen3.6-35b-a3b}"
-TIMEOUT="${TIMEOUT:-240}"
+TIMEOUT="${TIMEOUT:-360}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 TASKS_DIR="$HERE/tasks"
 NDCODE="$(command -v ndcode || true)"
 
 [ -n "$NDCODE" ] || { echo "ndcode not found on PATH. Install it first."; exit 1; }
+
+# The hub enforces a small max_parallel_requests limit (tier-dependent). Make sure
+# no stray ndcode is holding a slot, and space tasks out so the per-minute window
+# clears between runs — otherwise a run backs off (correctly) and blows the timeout.
+pkill -9 -f "$(basename "$NDCODE") run" >/dev/null 2>&1 || true
+sleep 3
 
 printf '%-16s %-8s %-8s\n' "task" "result" "time"
 printf '%-16s %-8s %-8s\n' "----" "------" "----"
@@ -23,6 +29,8 @@ pass=0; total=0
 for task in "$TASKS_DIR"/*/; do
   id="$(basename "$task")"
   total=$((total+1))
+  pkill -9 -f "$(basename "$NDCODE") run" >/dev/null 2>&1 || true
+  sleep 5
   work="$(mktemp -d)"
   # copy starter files (everything except the task metadata the agent shouldn't need to read)
   cp -R "$task"/* "$work"/ 2>/dev/null
